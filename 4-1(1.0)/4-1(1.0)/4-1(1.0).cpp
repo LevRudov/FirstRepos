@@ -1,162 +1,207 @@
-﻿#include <sstream>
 #include <iostream>
-#include <cmatch>
-#include <string>
 #include <random>
 
 using namespace std;
-// генератор случайных чиселс равномерным распределением
-class Rand_int
+/**
+*\brief Класс констант метода ввода
+*/
+enum class InputMethod
 {
-public:
-	Rand_int(int low, int high) :dist{}
-	int operator()() { return dist(re); }
-	void seed(int s) { re.seed(s); }
-private:
-	default_random_engine re;
-	uniform_int_distribution <> dist;
+	random,
+	manual
 };
-
 /**
-*\ brief находит индексы первой пары соседних элементовс разными знаками
-*\ param array массив состоящий из целых чисел
-*\ param quantity количество элементов массива
-*\ return индексы первой пары соседних элементов с разными знаками
+*\brief Функция выполняет заданный блок других функций для повышения читабельности и сокращения кода
+*\param array массив
+*\param size размер Массива
 */
-string index(const int* array, const int quantity);
+void BlockOfFunctions(int *array, const size_t size);
 /**
-*\ brief находит количество элементов, которые делятся на заданое число N без остатка
-*\ param array массив состоящий из целых чисел
-*\ param quantity количество элементов массива
-*\ return количетво элементов, которые делятся на заданное чисо N без остатка
+*\brief Функция ищет индексы первой пары чисел в массиве, разных по знаку
+*\param array массив
+*\param size размер Массива
+*\return Возвращает индекс второго элемента пары в случае успеха
 */
-int quant(const int* array, const int quantity, int n);
+size_t FirstDiffPair(const int *array, const size_t size);
 /**
-*\ brief функция ввода элементов многомерного массива, как случайными числами, так и с помощью клавиатуры по желанию пользователя
-*\ param array массив состоящий из целых чисел
-*\ param quantity количество элементов массива
+*\brief Функция считает количество элементов в массиве, которые делятся на произвольное число без остатка
+*\param array массив
+*\param size размер Массива
+*\return Возвращает количество элементов
 */
-void enter1(int* array, const int quantity);
+size_t ModNZero(int *array, const size_t size);
 /**
-*\ brief заменяет предпоследний элемент массива на максимальный по модулю
-*\ param array массив из n целых чисел
-*\ param quantity количество элементов массива
-*\ return измененный массив
+*\brief Функция меняет предпоследний элемент в массиве на максиальный по модулю
+*\param array массив
+*\param size размер Массива
 */
-void repl(const int* array, const int quantity);
+void MaxAbs(int *array, const size_t size);
 /**
-*\ brief Функция ввода элементов целого типа
-* \ param message сообщение о том, что нужно ввести
-* /
-int enter_int(const string & message);
-/**
-*\ brief Функция ввода с клавиатуры массива целых чисел arrayа
-*\ param array массив состоящий из целых чисел
-*\ param quantity кол-во элементов массива
+*\brief Функция возвращает массив размера size, заполненный пользователем вручную
+*\param size размер Массива
+*\return Заполненный массив
 */
-void input_array(int* array, const int quantity);
+int *FillManualArray(const size_t size);
 /**
-*\ brief Функция вывода элементов
-*\ param array массив состоящий из целых чисел
-*\ param quantity кол-во элементов массива
+*\brief Функция возвращает массив размера size, заполненный случайнвыми числами в заданном диапозоне
+*\param size размер Массива
+*\param minValue Нижний предел генерации чисел
+*\param maxValue Верхний предел генерации чисел
+*\return Заполненный массив
 */
-void print_array(const int* array, const int quantity);
+int *FillRandomArray(const size_t size, const int minValue, const int maxValue);
+/**
+*\brief Функция выводит массив в консоль
+*\param array массив
+*\param size размер Массива
+*/
+void PrintArray(const int *array, const size_t size);
+/**
+*\brief Функция возвращает целочисленное число, введённое пользователем
+*\param message Сообщение, выводимое в консоль
+*\return Возвращает число, введённое пользователем
+*/
+int InputInt(const std::string &message);
+/**
+*\brief Точка входа в программу
+*\return 0 в случае успеха
+*/
 int main()
 {
-	const int quantity = 81;
-	system("chcp 1251"); //вывод в консоль русского шрифта
-	int n;
-	cin » n;
-	int* array = new int[quantity];
-	enter1(array, quantity);
-
-	cout « "количество тех элементов,знаения которых делятся на n без остатка " « quant(array, quantity, n) « "\n";
-	cout « "индексы 1-ой пары элементов с разными знаками " « index(array, quantity) « "\n";
-	cout « "массив,с заменённым предпоследним элементом на максимальный по модолю ";
-	print_array(array, quantity);
-	delete[] array;
-}
-int enter_int(const string& message)
-{
-	cout « message;
-	int temp;
-	cin » temp;
-	return temp;
-}
-int quant(const int* array, const int quantity, int n)
-{
-	int s = 0;
-	for (int i = 0; i < quantity; i++)
+	cout << "";
+	size_t size = InputInt("How much numbers will be in your array?");
+	cout << "What the lower and upper limits of values in array?\n";
+	int minValue, maxValue;
+	cin >> minValue >> maxValue;
+	cout << "How do you prefer to fill your array?\n";
+	cout << static_cast<int>(InputMethod::random) << " — random\n"
+		 << static_cast<int>(InputMethod::manual) << " — manual";
+	size_t choose = InputInt("");
+	try
 	{
-		if ((array[i] % n) == 0)
+		auto choosen = static_cast<InputMethod>(choose);
+		switch (choosen)
 		{
-			s = s + 1;
-		}
-	}
-	return s;
-}
-string index(const int* array, const int quantity)
-{
-	stringstream ind;
-	for (int i = 0; i < (quantity - 1); i++)
-	{
-		if (array[i] * array[i + 1] < 0)
+		case InputMethod::random:
 		{
-			ind « to_string(i) « "(номер 1-го элемента пары) "«to_string(i + 1) « "(номер 2-го элемента пары) ";
+			int *array = FillRandomArray(size, minValue, maxValue);
+			BlockOfFunctions(array, size);
 			break;
 		}
-	}
-	return ind.str();
-}
-void repl(int* array, const int quantity)
-{
-	int max = 0;
-	for (int i = 0; i < quantity; i++)
-	{
-		if ((array[i] > array[i + 1]) && (abs(array[i]) > max))
+		case InputMethod::manual:
 		{
-			max = array[i];
+			int *array = FillManualArray(size);
+			BlockOfFunctions(array, size);
+			break;
+		}
 		}
 	}
-	array[quantity - 1] = max;
-}
-void enter1(int* array, const int quantity)
-{
-	enum input_selection { randomly = 0, ither };
-	int temp;
-	cout « "Введите randomly для заполнения массива случайными числами, иначе ither - "; std::cin » temp;
-	if (temp == ither)
+	catch (out_of_range &)
 	{
-		input_array(array, quantity);
+		return 1;
 	}
-	else
+
+	return 0;
+}
+
+int InputInt(const std::string &message)
+{
+	cout << message << std::endl;
+	int input = -1;
+	cin >> input;
+	if (input < 0)
 	{
-		if (temp == randomly)
+		throw(out_of_range("Incorrect size"));
+	}
+	return input;
+}
+
+void PrintArray(const int *array, const size_t size)
+{
+	for (size_t index = 0; index < size; index++)
+	{
+		cout << array[index] << " ";
+	}
+	cout << endl;
+}
+
+int *FillRandomArray(const size_t size, const int minValue, const int maxValue)
+{
+	random_device randomly;
+	mt19937 gen(randomly());
+	uniform_int_distribution<> Uniform_int_distribution(minValue, maxValue);
+	auto *array = new int[size];
+	for (size_t index = 0; index < size; index++)
+	{
+		array[index] = Uniform_int_distribution(gen);
+	}
+	return array;
+}
+
+int *FillManualArray(const size_t size)
+{
+	int *array = new int[size];
+	for (size_t index = 0; index < size; index++)
+	{
+		cin >> array[index];
+	}
+	return array;
+}
+
+void MaxAbs(int *array, const size_t size)
+{
+	size_t maxAbsIndex = 0;
+	for (size_t index = 1; index < size; index++)
+	{
+		if (abs(array[index]) > abs(array[maxAbsIndex]))
 		{
-			const int range_min = -40;
-			const int range_max = 40;
-			Rand_int rnd{ range_min,range_max };
-			for (int i = 0; i < quantity; i++)
-			{
-				array[i] = rnd();
-			}
+			maxAbsIndex = index;
 		}
 	}
+	array[size - 2] = array[maxAbsIndex];
 }
-void print_array(const int* array, int quantity)
+
+size_t ModNZero(int *array, const size_t size)
 {
-	for (int i = 0; i < quantity; i++)
+	size_t number = 0;
+	int n = 0;
+	cout << "Enter some number\n";
+	while (n == 0)
 	{
-		cout «("array[") « i « "]=" « array[i] « "\n";
+		cin >> n;
 	}
-}
-void input_array(int* array, const int quantity)
-{
-	for (int i = 0; i < quantity; i++)
+	for (size_t index = 0; index < size; index++)
 	{
-		stringstream message;
-		message « "Enter array
-			[" « i « "] = ";
-			array[i] = enter_int(message.str());
+		if (abs(array[index]) % n == 0)
+		{
+			number++;
+		}
+	}
+	return number;
+}
+
+size_t FirstDiffPair(const int *array, const size_t size)
+{
+	for (size_t index = 0; index < size; index++)
+	{
+		if ((array[index] < 0 && array[index + 1] >= 0) || (array[index] >= 0 && array[index + 1] < 0))
+		{
+			return index + 1;
+		}
+	}
+	return 0;
+}
+
+void BlockOfFunctions(int *array, const size_t size)
+{
+	PrintArray(array, size);
+	MaxAbs(array, size);
+	int number = ModNZero(array, size);
+	cout << "Count of numbers, which reminder of division by N == 0 — " << number << endl;
+	;
+	if (FirstDiffPair(array, size) != 0)
+	{
+		cout << "Idexes of first different signs element in array is " << FirstDiffPair(array, size) - 1 << ", " << FirstDiffPair(array, size) << endl;
+		PrintArray(array, size);
 	}
 }
