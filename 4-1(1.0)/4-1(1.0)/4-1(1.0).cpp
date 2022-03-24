@@ -29,7 +29,7 @@ size_t FirstDiffPair(const int *array, const size_t size);
 *\param size размер Массива
 *\return Возвращает количество элементов
 */
-size_t ModNZero(int *array, const size_t size);
+size_t ModNZero(int *array, const size_t size, const size_t checkNum);
 /**
 *\brief Функция меняет предпоследний элемент в массиве на максиальный по модулю
 *\param array массив
@@ -61,14 +61,13 @@ void PrintArray(const int *array, const size_t size);
 *\param message Сообщение, выводимое в консоль
 *\return Возвращает число, введённое пользователем
 */
-int InputInt(const std::string &message);
+size_t InputInt(const std::string &message);
 /**
 *\brief Точка входа в программу
 *\return 0 в случае успеха
 */
 int main()
 {
-	cout << "";
 	size_t size = InputInt("How much numbers will be in your array?");
 	cout << "What the lower and upper limits of values in array?\n";
 	int minValue, maxValue;
@@ -77,6 +76,7 @@ int main()
 	cout << static_cast<int>(InputMethod::random) << " — random\n"
 		 << static_cast<int>(InputMethod::manual) << " — manual";
 	size_t choose = InputInt("");
+	int* array = nullptr;
 	try
 	{
 		auto choosen = static_cast<InputMethod>(choose);
@@ -84,14 +84,12 @@ int main()
 		{
 		case InputMethod::random:
 		{
-			int *array = FillRandomArray(size, minValue, maxValue);
-			BlockOfFunctions(array, size);
+			array = FillRandomArray(size, minValue, maxValue);
 			break;
 		}
 		case InputMethod::manual:
 		{
-			int *array = FillManualArray(size);
-			BlockOfFunctions(array, size);
+			array = FillManualArray(size);
 			break;
 		}
 		}
@@ -100,11 +98,16 @@ int main()
 	{
 		return 1;
 	}
+	BlockOfFunctions(array, size);
+	
+	if(array != nullptr){
+		delete [] array;
+		} 
 
 	return 0;
 }
 
-int InputInt(const std::string &message)
+size_t InputInt(const std::string &message)
 {
 	cout << message << std::endl;
 	int input = -1;
@@ -161,18 +164,12 @@ void MaxAbs(int *array, const size_t size)
 	array[size - 2] = array[maxAbsIndex];
 }
 
-size_t ModNZero(int *array, const size_t size)
+size_t ModNZero(int *array, const size_t size, const size_t checkNum)
 {
 	size_t number = 0;
-	int n = 0;
-	cout << "Enter some number\n";
-	while (n == 0)
-	{
-		cin >> n;
-	}
 	for (size_t index = 0; index < size; index++)
 	{
-		if (abs(array[index]) % n == 0)
+		if (abs(array[index]) % checkNum == 0)
 		{
 			number++;
 		}
@@ -182,9 +179,9 @@ size_t ModNZero(int *array, const size_t size)
 
 size_t FirstDiffPair(const int *array, const size_t size)
 {
-	for (size_t index = 0; index < size; index++)
+	for (size_t index = 0; index+1 < size; index++)
 	{
-		if ((array[index] < 0 && array[index + 1] >= 0) || (array[index] >= 0 && array[index + 1] < 0))
+		if (array[index]*array[index+1]<0)
 		{
 			return index + 1;
 		}
@@ -196,8 +193,12 @@ void BlockOfFunctions(int *array, const size_t size)
 {
 	PrintArray(array, size);
 	MaxAbs(array, size);
-	int number = ModNZero(array, size);
-	cout << "Count of numbers, which reminder of division by N == 0 — " << number << endl;
+	size_t checkNum = 0;
+	while(checkNum <= 0){
+	checkNum = InputInt("Enter some positive number, not zero");
+	}
+	int number = ModNZero(array, size,checkNum);
+	cout << "Count of numbers, which reminder of division by " << checkNum << " == 0 — " << number << endl;
 	;
 	if (FirstDiffPair(array, size) != 0)
 	{
