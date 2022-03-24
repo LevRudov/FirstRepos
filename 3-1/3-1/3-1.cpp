@@ -26,10 +26,10 @@ int main()
 	while (x <= step)
 	{
 		if (checkValid(x))
-			std::cout << "for x= " << x << " y=" << get(x) << "\n";
+			std::cout << "for x= " << x << get(x) << "\n";
 		else
 			std::cout << "the function does not exit at this point" << x << "\n";
-		x += border;
+		x += step;
 	}
 	return 0;
 }
