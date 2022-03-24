@@ -7,7 +7,7 @@
 * \param x - аргумент функции.
 * \return  значение функции.
 */
-double get(const double x, int y);
+double get(const double x);
 /**
 *\brief вычисляет значение заданной функции
 *\param x - аргумент
@@ -23,24 +23,21 @@ int main()
 	double x = -2;
 	const double step = 0.001;
 	const double border = 0.2;
-	int y = 0;
-	y = get(x, y);
 	while (x <= step)
 	{
 		if (checkValid(x))
-			std::cout << "for x= " << x << " y=" << get(x, y) << "\n";
+			std::cout << "for x= " << x << " y=" << get(x) << "\n";
 		else
-			std::cout << "invalid x:" << x << "\n";
-		y = get(x, y);
+			std::cout << "the function does not exit at this point" << x << "\n";
 		x += border;
 	}
 	return 0;
 }
 
 
-double get(const double x, int y)
+double get(const double x)
 {
-	return log(1 / (y + 2 * x + x * x));
+	return log(1 / (2 * x + x * x));
 }
 bool checkValid(double x)
 {
